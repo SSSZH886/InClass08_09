@@ -5,11 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.inclass08_09.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,6 +52,15 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         private TextView textViewMessage;
 
+        private ImageView chatImage;
+
+        public ImageView getChatImage() {
+            return chatImage;
+        }
+
+        public void setChatImage(ImageView chatImage) {
+            this.chatImage = chatImage;
+        }
 
         public TextView getTextViewMessage() {
             return textViewMessage;
@@ -60,6 +71,8 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
             super(itemView);
 
             textViewMessage = itemView.findViewById(R.id.textView_message);
+
+            chatImage = itemView.findViewById(R.id.imageView_chatImage);
         }
 
 
@@ -103,6 +116,10 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
         holder.textViewMessage.setText(chat.getMessage());
 
 
+        Glide.with(holder.itemView.getContext())
+                .load(chat.getImageURL())
+                .placeholder(R.drawable.ic_launcher_background)
+                .into(holder.chatImage);
 
 
     }

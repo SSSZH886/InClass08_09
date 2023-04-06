@@ -6,8 +6,32 @@ public class Friend implements Serializable {
     private String name;
     private String email;
 
+    private String imageURL;
+
+    public Friend(String name, String email, String imageURL) {
+        this.name = name;
+        this.email = email;
+        this.imageURL = imageURL;
+    }
 
     public Friend() {
+    }
+
+    @Override
+    public String toString() {
+        return "Friend{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", imageURL='" + imageURL + '\'' +
+                '}';
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public Friend(String name, String email) {
@@ -33,12 +57,4 @@ public class Friend implements Serializable {
     }
 
 
-
-    @Override
-    public String toString() {
-        return "Friend{" +
-                "name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 }

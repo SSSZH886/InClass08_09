@@ -1,5 +1,7 @@
 package com.example.inclass08_09.fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
 import android.os.Bundle;
 
@@ -15,9 +17,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.inclass08_09.R;
 import com.example.inclass08_09.model.Friend;
 import com.example.inclass08_09.model.FriendAdapter;
@@ -42,14 +46,18 @@ public class FragmentMain extends Fragment {
 
     private static final String ARG_FRIENDS = "friendsarray";
 
+    private static final String ARG_URL = "imageURL";
+
+    private static final String ARG_USERNAME = "userName";
+
     private Friend mFriend;
-    private int position;
-    private TextView greeting;
-    private String username;
+
     private ImageButton logout;
-    private EditText editTextName;
-    private EditText editTextEmail;
-    private Button buttonChat;
+
+
+    private ImageView goToProfile;
+
+    private TextView greeting;
 
     private RecyclerView recyclerView;
     private FriendAdapter friendsAdapter;
@@ -77,6 +85,16 @@ public class FragmentMain extends Fragment {
     }
 
 
+    public static FragmentMain newInstance(String name, String imageURL) {
+        FragmentMain fragment = new FragmentMain();
+        Bundle args = new Bundle();
+        args.putString(ARG_USERNAME,name);
+        args.putString(ARG_URL, imageURL);
+        args.putSerializable(ARG_FRIENDS, new ArrayList<Friend>());
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     public static FragmentMain newInstance() {
         FragmentMain fragment = new FragmentMain();
         Bundle args = new Bundle();
@@ -84,7 +102,6 @@ public class FragmentMain extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +111,7 @@ public class FragmentMain extends Fragment {
                 mFriends = (ArrayList<Friend>) args.getSerializable(ARG_FRIENDS);
                 Log.d("main fragment - initial friends data", mFriends.toString());
             }
+
         } else {
             mFriends = new ArrayList<>(); // initialize the mFriends ArrayList here
         }
@@ -101,7 +119,10 @@ public class FragmentMain extends Fragment {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
-
+        Log.d(TAG, "onCreate: " + args.getString("edit name") );
+        if (args.containsKey(ARG_USERNAME)) {
+            editProfile(args.getString(ARG_USERNAME), args.getString(ARG_URL));
+        }
         //            Loading initial data...
         loadData();
     }
@@ -111,9 +132,15 @@ public class FragmentMain extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        greeting = rootView.findViewById(R.id.textViewGreet);
+        goToProfile = rootView.findViewById(R.id.imageView_goToProfile);
+        greeting = rootView.findViewById(R.id.textView_greetings);
+
+        Glide.with(this)
+                .load(getArguments().getString(ARG_URL))
+                .into(goToProfile);
+
         logout = rootView.findViewById(R.id.imageButtonLogout);
-        greeting.setText("Hello "+mUser.getDisplayName()+"!!!");
+        greeting.setText("Hello "+mUser.getEmail()+"!!!");
 
         //      Setting up RecyclerView........
         recyclerView = rootView.findViewById(R.id.recyclerReview);
@@ -121,6 +148,13 @@ public class FragmentMain extends Fragment {
         friendsAdapter = new FriendAdapter(mFriends, getContext());
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
         recyclerView.setAdapter(friendsAdapter);
+
+        goToProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.populateProfile();
+            }
+        });
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,8 +201,43 @@ public class FragmentMain extends Fragment {
                 });
     }
 
+    private void editProfile(String name, String imageURL){
+        //String email = String.valueOf(editTextEmail.getText());
+        db.collection("users")
+                .document("ssszh886@gmail.com")
+                .collection("Friends")
+                .document(mUser.getEmail())
+                .delete();
+
+        mFriend = new Friend(name, mUser.getEmail(), imageURL);
+
+        addToFirebase(mFriend);
+    }
+
+    private void addToFirebase(Friend friend) {
+        db.collection("users")
+                .document("ssszh886@gmail.com")
+                .collection("Friends")
+                .document(friend.getEmail())
+                .set(friend)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d("register fragment: friends added", "friends added");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("FAILED TO ADD A FRIEND", String.valueOf(e));
+                    }
+                });
+    }
+
     public interface ImainFragmentButtonAction {
         void logoutPressed();
+
+        void populateProfile();
     }
 
 

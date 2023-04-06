@@ -1,9 +1,30 @@
 package com.example.inclass08_09.fragments;
 
+import static android.app.Activity.RESULT_OK;
+import static android.content.ContentValues.TAG;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.camera.core.Camera;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.ImageProxy;
+import androidx.camera.core.Preview;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +39,7 @@ import androidx.annotation.NonNull;
 
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.inclass08_09.model.Friend;
@@ -25,22 +47,50 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 
 public class RegisterFragment extends Fragment implements View.OnClickListener{
 
     private FirebaseAuth mAuth;
+    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private FirebaseUser mUser;
     private EditText editTextName, editTextEmail, editTextPassword, editTextRepPassword;
     private Button buttonRegister;
+
+    PreviewView previewView;
+
+    private ImageCapture imageCapture;
+
+    private final int CAMERA_REQUEST_CODE = 100;
+    private Bitmap bitmap;
     private String name, email, password, rep_password;
     private IregisterFragmentAction mListener;
     private FirebaseFirestore db;
+
+    private ImageView imageView;
+
+    private File photoFile;
+
+
 
     public RegisterFragment() {
         // Required empty public constructor
@@ -53,6 +103,8 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         return fragment;
     }
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +112,13 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         db = FirebaseFirestore.getInstance();
         mUser = mAuth.getCurrentUser();
 
+
+
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
     }
 
@@ -86,7 +145,16 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         editTextPassword = rootView.findViewById(R.id.editTextRegister_Password);
         editTextRepPassword = rootView.findViewById(R.id.editTextRegister_Rep_Password);
         buttonRegister = rootView.findViewById(R.id.buttonRegister);
+        //previewView = rootView.findViewById(R.id.previewView);
+        //buttonCapture = rootView.findViewById(R.id.bCapture);
         buttonRegister.setOnClickListener(this);
+        //imageView = rootView.findViewById(R.id.imageView2);
+
+
+
+
+
+
 
         return rootView;
     }
@@ -163,6 +231,9 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         }
     }
 
+
+
+
     private void addToFirebase(Friend friend) {
         db.collection("users")
                 .document("ssszh886@gmail.com")
@@ -183,7 +254,12 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
                 });
     }
 
-    public interface IregisterFragmentAction {
+
+
+public interface IregisterFragmentAction {
         void registerDone(FirebaseUser mUser);
     }
+
+
+
 }

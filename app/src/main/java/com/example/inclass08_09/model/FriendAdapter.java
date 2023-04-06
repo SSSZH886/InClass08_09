@@ -1,6 +1,7 @@
 package com.example.inclass08_09.model;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
     }
 
     public FriendAdapter(ArrayList<Friend> friends, Context context) {
+        Log.d("demo", "FriendAdapter: context "+context);
         this.friends = friends;
         if(context instanceof IfriendsListRecyclerAction){
             this.mListener = (IfriendsListRecyclerAction) context;
@@ -45,6 +47,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
 
         private TextView textViewName, textViewEmail;
         private Button buttonChat;
+
 
         public TextView getTextViewName() {
             return textViewName;
@@ -86,20 +89,44 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
 
         Friend curFriend = this.getFriends().get(position);
 
-        holder.getTextViewName().setText(curFriend.getName());
-        holder.getTextViewEmail().setText(curFriend.getEmail());
+        if (curFriend != null) {
+            if (curFriend.getName() != null) {
+                holder.getTextViewName().setText(curFriend.getName());
+            } else {
+                holder.getTextViewName().setText("Unknown Name");
+            }
+
+            if (curFriend.getEmail() != null) {
+                holder.getTextViewEmail().setText(curFriend.getEmail());
+            } else {
+                holder.getTextViewEmail().setText("Unknown Email");
+            }
+        } else {
+            holder.getTextViewName().setText("Null Friend");
+            holder.getTextViewEmail().setText("Null Friend");
+        }
+
         holder.getButtonChat().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = friends.get(holder.getAdapterPosition()).getEmail();
-                mListener.chatButtonClickedFromRecyclerView(email);
+                if (curFriend != null && curFriend.getEmail() != null) {
+                    String email = friends.get(holder.getAdapterPosition()).getEmail();
+                    mListener.chatButtonClickedFromRecyclerView(email);
+                } else {
+                    Log.e("FriendAdapter", "Cannot perform chatButtonClickedFromRecyclerView() due to null Friend or null Email");
+                }
             }
         });
     }
 
+
     @Override
     public int getItemCount() {
-        return this.getFriends().size();
+        if (this.getFriends() != null) {
+            return this.getFriends().size();
+        } else {
+            return 0;
+        }
     }
 
     public interface IfriendsListRecyclerAction {

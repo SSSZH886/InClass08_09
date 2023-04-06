@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.FragmentProfile" >
+
+    <EditText
+        android:id="@+id/editText_editProfileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:text="Name"
+        app:layout_constraintEnd_toEndOf="@+id/imageView_editProfile"
+        app:layout_constraintStart_toStartOf="@+id/imageView_editProfile"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_editProfile" />
+
+    <Button
+        android:id="@+id/button_takePicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Camera"
+        app:layout_constraintEnd_toEndOf="@+id/editText_editProfileName"
+        app:layout_constraintStart_toStartOf="@+id/editText_editProfileName"
+        app:layout_constraintTop_toBottomOf="@+id/editText_editProfileName" />
+
+    <ImageView
+        android:id="@+id/imageView_editProfile"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars" />
+
+    <Button
+        android:id="@+id/button_editProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Edit"
+        app:layout_constraintEnd_toEndOf="@+id/button_takePicture"
+        app:layout_constraintStart_toStartOf="@+id/button_takePicture"
+        app:layout_constraintTop_toBottomOf="@+id/button_takePicture" />
+</androidx.constraintlayout.widget.ConstraintLayout>

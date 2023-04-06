@@ -5,6 +5,33 @@ public class Chat {
     private String receiver;
     private String message;
 
+    @Override
+    public String toString() {
+        return "Chat{" +
+                "sender='" + sender + '\'' +
+                ", receiver='" + receiver + '\'' +
+                ", message='" + message + '\'' +
+                ", imageURL='" + imageURL + '\'' +
+                '}';
+    }
+
+    public Chat(String sender, String receiver, String message, String imageURL) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.message = message;
+        this.imageURL = imageURL;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    private String imageURL;
+
     public Chat() {
     }
 
@@ -29,20 +56,11 @@ public class Chat {
         return message;
     }
 
-    @Override
-    public String toString() {
-        return "Chat{" +
-                "sender='" + sender + '\'' +
-                ", receiver='" + receiver + '\'' +
-                ", message='" + message + '\'' +
-                '}';
-    }
-
     public void setMessage(String message) {
         this.message = message;
     }
 
-    public Chat(String sender, String receiver, String text) {
+    public Chat(String sender, String receiver, String message) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
